@@ -89,12 +89,14 @@ pub mod dht11 {
     #[derive(Clone, Copy, Debug, PartialEq, Eq)]
     pub struct Reading {
         pub temperature: i8,
+        pub temperature_decimal: u8,
         pub relative_humidity: u8,
+        pub relative_humidity_decimal: u8,
     }
 
     impl internal::FromRaw for Reading {
         fn raw_to_reading(bytes: [u8; 4]) -> Reading {
-            let [rh, _, temp_signed, _] = bytes;
+            let [rh, rh_dec, temp_signed, temp_dec] = bytes;
             let temp = {
                 let (signed, magnitude) = convert_signed(temp_signed);
                 let temp_sign = if signed { -1 } else { 1 };
@@ -102,7 +104,9 @@ pub mod dht11 {
             };
             Reading {
                 temperature: temp,
+                temperature_decimal: temp_dec,
                 relative_humidity: rh,
+                relative_humidity_decimal: rh_dec,
             }
         }
     }
